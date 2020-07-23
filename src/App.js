@@ -1,5 +1,6 @@
-mport React, { Component } from "react";
+import React, { Component } from "react";
 import "./App.css";
+
 const axios = require("axios");
 
 var names = [];
@@ -91,23 +92,21 @@ export default class App extends Component {
     for (let item in inputData.results) {
       var typesRes = await axios.get(inputData.results[item].url);
       var typesResData = await typesRes;
-      //console.log(typesResData.data.types[0].type.name);
-      typesData.push(typesResData.data.types[0].type.name);
-      /*axios.get(this.state.data.results[item].url).then((pokeUrl) => {
-        typesData.push(pokeUrl.data.types[0].type.name);
-      });*/
+      typesArr = [];
+      for (let type in typesResData.data.types) {
+        typesArr.push(typesResData.data.types[type]);
+      }
+      //console.log(typesArr)
+      typesData.push(/*typesResData.data.types[0].type.name*/ typesArr);
+      //console.log(typesData)
     }
 
     return typesData;
   }
 
   render() {
-    //console.log(this.state.typesData.length);
-    //console.log(this.state.names.length);
+    //console.log(this.state.typesData[0])
     return (
-      /*this.state.loading ? (
-      <h1>LOADING</h1>
-    ) : (*/
       <div>
         {this.state.loading ? (
           <h1>LOADING</h1>
@@ -115,15 +114,51 @@ export default class App extends Component {
           <div className="cards-div">
             {this.state.imageUrls.map((item, index) => {
               return (
-                <div className={this.state.typesData[index]} key={index}>
-                  <h3>
-                    {this.state.names[index].slice(0, 1).toUpperCase() +
-                      this.state.names[index].slice(1)}
-                  </h3>
+                <div
+                  className={this.state.typesData[index][0].type.name}
+                  key={index}
+                >
+                  <header>
+                    <h3 className="pokemon-name">
+                      {this.state.names[index].slice(0, 1).toUpperCase() +
+                        this.state.names[index].slice(1)}
+                    </h3>
+                    {index + 1 < 10 ?
+                    <h3 className="pokemon-number">#00{index}</h3>
+                    : index + 1 < 100 ?
+                    <h3 className="pokemon-number">#0{index}</h3>
+                    : <h3 className="pokemon-number">#{index}</h3>
+                    }
+                  </header>
                   <img
                     src={this.state.imageUrls[index]}
                     alt={`${this.state.names[index]}`}
                   ></img>
+                  {this.state.typesData[index].length === 1 ? (
+                    <div
+                      className={`${this.state.typesData[index][0].type.name}-preview-sing`}
+                    >
+                      {this.state.typesData[index].map((item, itemIndex) => {
+                        return (
+                          <p key={itemIndex} className="types-preview">
+                            {this.state.typesData[index][itemIndex].type.name}
+                          </p>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div
+                      className={`${this.state.typesData[index][0].type.name}-preview-mult`}
+                    >
+                      {this.state.typesData[index].map((item, itemIndex) => {
+                        return (
+                          <p key={itemIndex} className="types-preview">
+                            {this.state.typesData[index][itemIndex].type.name}
+                          </p>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               );
             })}
