@@ -22,6 +22,22 @@ export default class App extends Component {
       loading: true,
       serverResponse: "",
     };
+
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  async handleClick(pokemonName) {
+    const clickRes = await axios.get(
+      `https://pokeapi.co/api/v2/pokemon/${pokemonName.toLowerCase()}`
+    );
+    const clickData = await clickRes;
+    for (let stat in clickData.data.stats) {
+      console.log(
+        clickData.data.stats[stat].stat.name.slice(0, 1).toUpperCase() +
+          clickData.data.stats[stat].stat.name.slice(1) + ": " + clickData.data.stats[stat].base_stat
+      );
+    }
+    console.log(clickData.data.stats.length);
   }
 
   async componentDidMount() {
@@ -117,18 +133,25 @@ export default class App extends Component {
                 <div
                   className={this.state.typesData[index][0].type.name}
                   key={index}
+                  onClick={() =>
+                    this.handleClick(
+                      this.state.names[index].slice(0, 1).toUpperCase() +
+                        this.state.names[index].slice(1)
+                    )
+                  }
                 >
                   <header>
                     <h3 className="pokemon-name">
                       {this.state.names[index].slice(0, 1).toUpperCase() +
                         this.state.names[index].slice(1)}
                     </h3>
-                    {index + 1 < 10 ?
-                    <h3 className="pokemon-number">#00{index}</h3>
-                    : index + 1 < 100 ?
-                    <h3 className="pokemon-number">#0{index}</h3>
-                    : <h3 className="pokemon-number">#{index}</h3>
-                    }
+                    {index + 1 < 10 ? (
+                      <h3 className="pokemon-number">#00{index}</h3>
+                    ) : index + 1 < 100 ? (
+                      <h3 className="pokemon-number">#0{index}</h3>
+                    ) : (
+                      <h3 className="pokemon-number">#{index}</h3>
+                    )}
                   </header>
                   <img
                     src={this.state.imageUrls[index]}
